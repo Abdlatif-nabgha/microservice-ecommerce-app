@@ -36,7 +36,7 @@ public class NotificationConsumer {
                         .build()
         );
 
-        // todo: send email
+        //  send email
         var customerName = paymentConfirmation.customerFirstName();
         var customerEmail = paymentConfirmation.customerEmail();
         var amount = paymentConfirmation.amount();
@@ -65,7 +65,7 @@ public class NotificationConsumer {
         // todo: send email
         var customerName = orderConfirmation.customer().firstName();
         var customerEmail = orderConfirmation.customer().email();
-        var amount = orderConfirmation.totalAmount();
+        var amount = orderConfirmation.amount();
         var orderReference = orderConfirmation.orderReference();
         var products = orderConfirmation.products();
         emailService.sendOrderConfirmationEmail(

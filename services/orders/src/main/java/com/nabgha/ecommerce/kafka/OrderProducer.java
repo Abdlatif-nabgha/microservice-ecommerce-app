@@ -13,16 +13,30 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class OrderProducer {
 
+    private static final String ORDER_TOPIC = "order-topic";
+
     private final KafkaTemplate<String, OrderConfirmation> kafkaTemplate;
 
     public void sendOrderConfirmation(OrderConfirmation orderConfirmation) {
-        log.info("Sending order confirmation");
+        log.info("Sending order confirmation to topic {}: {}", ORDER_TOPIC, orderConfirmation);
 
         Message<OrderConfirmation> message = MessageBuilder
                 .withPayload(orderConfirmation)
-                .setHeader(KafkaHeaders.TOPIC, "order-topic")
+                .setHeader(KafkaHeaders.TOPIC, ORDER_TOPIC)
                 .build();
 
-        kafkaTemplate.send(message);
+        kafkaTemplate
+                .send(message)
+                .whenComplete((result, exception) -> {
+                    if ( exception != null) {
+                        log.error("Failed to send order confirmation to {}", ORDER_TOPIC, exception);
+                        return;
+                    }
+                    log.info(
+                            "Order confirmation sent successfully to topic={}, partition={}, offset={}",
+                            result.getRecordMetadata().topic(),
+                            result.getRecordMetadata().partition(),
+                            result.getRecordMetadata().offset());
+                });
     }
 }
