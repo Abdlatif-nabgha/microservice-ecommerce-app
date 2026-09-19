@@ -1,0 +1,15 @@
+package com.nabgha.ecommerce;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableAsync;
+
+@SpringBootApplication
+@EnableAsync
+public class NotificationApplication {
+
+	static void main(String[] args) {
+		SpringApplication.run(NotificationApplication.class, args);
+	}
+
+}
