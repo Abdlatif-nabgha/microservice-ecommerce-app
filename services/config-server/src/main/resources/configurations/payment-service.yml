@@ -4,6 +4,7 @@ spring:
     username: nabgha
     password: password
     driver-class-name: org.postgresql.Driver
+
   jpa:
     hibernate:
       ddl-auto: validate
@@ -16,6 +17,8 @@ spring:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
       properties:
-        spring.json.type.mapping: paymentConfirmation:com.nabgha.ecommerce.notification.PaymentNotificationRequest
+        spring.json.type.mapping: >-
+          paymentConfirmation:com.nabgha.ecommerce.notification.PaymentNotificationRequest
+
 server:
   port: 8060
