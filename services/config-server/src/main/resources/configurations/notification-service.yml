@@ -1,7 +1,7 @@
 spring:
   mongodb:
-    username: nabgha
-    password: password
+    username: ${MONGO_USER}
+    password: ${MONGO_PASSWORD}
     host: localhost
     port: 27017
     authentication-database: admin
@@ -26,8 +26,8 @@ spring:
   mail:
     host: localhost
     port: 1025
-    username: nabgha
-    password: password
+    username: ${MAIL_USER}
+    password: ${MAIL_PASSWORD}
     properties:
       mail:
         smtp:

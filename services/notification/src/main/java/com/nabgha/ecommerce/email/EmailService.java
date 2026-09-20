@@ -12,9 +12,8 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
-
+import  org.springframework.beans.factory.annotation.Value;
 import java.math.BigDecimal;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +31,9 @@ public class EmailService {
     private final JavaMailSender mailSender;
     private final SpringTemplateEngine templateEngine;
 
+   @Value("${SENDER_EMAIL:abdelatif.nabgha06@gmail.com}")
+    private String senderEmail;
+
     @Async
     public void sendPaymentSuccessEmail(
             String destinationEmail,
@@ -43,7 +45,7 @@ public class EmailService {
         MimeMessageHelper messageHelper =
                 new MimeMessageHelper(mimeMessage, MULTIPART_MODE_RELATED, UTF_8.name());
 
-        messageHelper.setFrom("abdelatif.nabgha06@gmail.com.com");
+        messageHelper.setFrom(senderEmail);
         final String templateName = PAYMENT_CONFIRMATION.getTemplate();
 
         Map<String, Object> variables = new HashMap<>();
@@ -80,7 +82,7 @@ public class EmailService {
         MimeMessageHelper messageHelper =
                 new MimeMessageHelper(mimeMessage, MULTIPART_MODE_RELATED, UTF_8.name());
 
-        messageHelper.setFrom("abdelatif.nabgha06@gmail.com.com");
+        messageHelper.setFrom(senderEmail);
         final String templateName = ORDER_CONFIRMATION.getTemplate();
 
         Map<String, Object> variables = new HashMap<>();

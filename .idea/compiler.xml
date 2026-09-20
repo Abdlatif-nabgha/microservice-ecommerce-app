@@ -9,15 +9,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="config-server" />
         <module name="discoveryserver" />
-      </profile>
-      <profile name="Annotation profile for notification" enabled="true">
-        <sourceOutputDir name="target/generated-sources/annotations" />
-        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
-        <outputRelativeToContentRoot value="true" />
-        <processorPath useClasspath="false">
-          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.46/lombok-1.18.46.jar" />
-        </processorPath>
-        <module name="notification" />
+        <module name="gateway" />
       </profile>
       <profile name="Annotation profile for products" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
@@ -27,6 +19,7 @@
           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.46/lombok-1.18.46.jar" />
           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.46/lombok-1.18.46.jar" />
         </processorPath>
+        <module name="notification" />
         <module name="payment" />
         <module name="orders" />
         <module name="customers" />
@@ -39,6 +32,7 @@
       <module name="config-server" options="-parameters" />
       <module name="customers" options="-parameters" />
       <module name="discoveryserver" options="-parameters" />
+      <module name="gateway" options="-parameters" />
       <module name="notification" options="-parameters" />
       <module name="orders" options="-parameters" />
       <module name="payment" options="-parameters" />
