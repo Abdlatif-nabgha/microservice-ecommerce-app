@@ -15,7 +15,7 @@ public class OrderProducer {
 
     private static final String ORDER_TOPIC = "order-topic";
 
-    private final KafkaTemplate<String, OrderConfirmation> kafkaTemplate;
+    private final KafkaTemplate<Object, Object> kafkaTemplate;
 
     public void sendOrderConfirmation(OrderConfirmation orderConfirmation) {
         log.info("Sending order confirmation to topic {}: {}", ORDER_TOPIC, orderConfirmation);

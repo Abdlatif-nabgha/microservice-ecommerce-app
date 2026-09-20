@@ -15,7 +15,7 @@ public class NotificationProducer {
 
     private static final String PAYMENT_TOPIC = "payment-topic";
 
-    private final KafkaTemplate<String, PaymentNotificationRequest> paymentKafkaTemplate;
+    private final KafkaTemplate<Object, Object> paymentKafkaTemplate;
 
     public void sendNotification(PaymentNotificationRequest request) {
         log.info(

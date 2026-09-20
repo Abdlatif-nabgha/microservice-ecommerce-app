@@ -1,5 +1,5 @@
 spring:
   mongodb:
-    uri: mongodb://${MONGO_USER}:${MONGO_PASSWORD}@localhost:27017/customer?authSource=admin
+    uri: mongodb://${MONGO_USER:nabgha}:${MONGO_PASSWORD:password}@localhost:27017/customer?authSource=admin
 server:
   port: 8090

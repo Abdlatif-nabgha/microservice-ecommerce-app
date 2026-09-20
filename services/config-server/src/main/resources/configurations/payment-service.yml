@@ -1,8 +1,8 @@
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/payment
-    username: ${POSTGRES_USER}
-    password: ${POSTGRES_PASSWORD}
+    username: ${POSTGRES_USER:nabgha}
+    password: ${POSTGRES_PASSWORD:password}
     driver-class-name: org.postgresql.Driver
 
   jpa:
