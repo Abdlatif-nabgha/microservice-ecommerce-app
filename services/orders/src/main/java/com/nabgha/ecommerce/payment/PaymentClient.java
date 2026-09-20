@@ -5,13 +5,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @FeignClient(
-        name = "product-service",
-        url = "${application.config.product-url}"
+        name = "payment-service",
+        url = "${application.config.payment-url}"
 )
 public interface PaymentClient {
 
     @PostMapping
-    Integer requestOrderPayment(
+    String requestOrderPayment(
             @RequestBody PaymentRequest request
     );
 }

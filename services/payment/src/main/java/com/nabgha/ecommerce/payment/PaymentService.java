@@ -16,7 +16,7 @@ public class PaymentService {
     private final NotificationProducer notificationProducer;
 
     @Transactional
-    public Payment processPayment(PaymentRequest request) {
+    public String processPayment(PaymentRequest request) {
         Payment savedPayment = paymentRepository.save(paymentMapper.toPayment(request));
         
         // send notification
@@ -31,6 +31,6 @@ public class PaymentService {
                         .build()
         );
         
-        return savedPayment;
+        return savedPayment.getId();
     }
 }
