@@ -4,8 +4,6 @@ import com.nabgha.ecommerce.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
@@ -36,7 +34,7 @@ public class ProductClient {
                 .toEntity(responseType);
 
         if (responseEntity.getStatusCode().isError()) {
-            throw new BusinessException(responseEntity.getStatusCode().toString());
+            throw new BusinessException("Product or quantity doesn't exist" + responseEntity.getStatusCode());
         }
         return responseEntity.getBody();
     }

@@ -8,10 +8,11 @@ import org.springframework.kafka.config.TopicBuilder;
 @Configuration
 public class KafkaPaymentTopicConfig {
 
+    private static final String PAYMENT_TOPIC = "payment-topic";
     @Bean
     public NewTopic paymentTopic() {
         return TopicBuilder
-                .name("payment-topic")
+                .name(PAYMENT_TOPIC)
                 .partitions(1)
                 .replicas(1)
                 .build();

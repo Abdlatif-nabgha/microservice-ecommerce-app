@@ -4,22 +4,26 @@ package com.nabgha.ecommerce.customers;
 import com.nabgha.ecommerce.exceptions.CustomerNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class CustomerService {
 
     private final CustomerRepository customerRepository;
     private final CustomerMapper mapper;
 
+    @Transactional
     public CustomerResponse createCustomer(CustomerRequest request) {
         var customer = mapper.toCustomer(request);
         var savedCustomer = customerRepository.save(customer);
         return mapper.toCustomerResponse(savedCustomer);
     }
 
+    @Transactional
     public CustomerResponse updateCustomer(CustomerRequest request, String customerId) {
         var customer = customerRepository.findById(customerId)
                 .orElseThrow(() -> new CustomerNotFoundException(customerId));
@@ -58,6 +62,7 @@ public class CustomerService {
         return customerRepository.findById(customerId).isPresent();
     }
 
+    @Transactional
     public void delete(String customerId) {
         if (!existsById(customerId)) {
             throw new CustomerNotFoundException(customerId);

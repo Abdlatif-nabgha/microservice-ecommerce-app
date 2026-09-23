@@ -8,5 +8,6 @@ spring:
   cloud:
     config:
       server:
-        native:
-          search-locations: classpath:/configurations
+        git:
+          uri: https://github.com/Abdlatif-nabgha/ecommerce-configs
+          default-label: main

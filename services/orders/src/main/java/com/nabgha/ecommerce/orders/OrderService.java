@@ -31,17 +31,19 @@ public class OrderService {
     private final PaymentClient paymentClient;
 
     @Transactional
-    public Order createOrder(OrderRequest request) {
+    public OrderResponse createOrder(OrderRequest request) {
 
         // 1. check the customer    -> customer-microservice  (OpenFein)
         var customer = this.customerClient.findCustomerById(request.customerId())
                 .orElseThrow(() -> new BusinessException("Cannot create order because customer not found"));
 
         // 2. purchase the product  -> product-microservice (RestClient)
-            var purchaseProducts = this.productClient.purchaseProducts(request.products());
+        var purchaseProducts = this.productClient.purchaseProducts(request.products());
 
         // 3. persist order && order lines
         var order = orderRepository.save(orderMapper.toOrder(request));
+
+        var orderResponse = orderMapper.toOrderResponse(order);
 
         for (PurchaseRequest purchaseRequest : request.products()) {
             orderLineService.saveOrderline(
@@ -52,7 +54,7 @@ public class OrderService {
                     )
             );
         }
-        // 4. todo: start payment process (order microservice)
+        // 4. start payment process (payment microservice)
         var paymentRequest = new PaymentRequest(
                 request.amount(),
                 request.paymentMethod(),
@@ -72,7 +74,7 @@ public class OrderService {
                         purchaseProducts
                 )
         );
-        return order;
+        return orderResponse;
     }
 
     public List<OrderResponse> findAll() {

@@ -7,7 +7,6 @@ import jakarta.persistence.ManyToOne;
 import lombok.*;
 
 import java.math.BigDecimal;
-import java.util.UUID;
 
 @Entity
 @NoArgsConstructor @AllArgsConstructor @Builder @Getter @Setter
