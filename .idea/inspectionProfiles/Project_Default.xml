@@ -7,16 +7,19 @@
         <list>
           <option value="products" />
           <option value="payment" />
+          <option value="gateway" />
         </list>
       </option>
       <option name="ignoredPackages">
         <list>
           <option value="org.apache.httpcomponents:httpclient:4.5.3" />
           <option value="org.apache.httpcomponents:httpclient:4.5.3" />
+          <option value="org.apache.httpcomponents:httpclient:4.5.3" />
         </list>
       </option>
       <option name="ignoredReasons">
         <list>
+          <option value="Not exploitable" />
           <option value="Not exploitable" />
           <option value="Not exploitable" />
         </list>
