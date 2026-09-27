@@ -4,4 +4,6 @@ spring:
       - optional:configserver:http://localhost:8888
   application:
     name: payment-service
-
+  flyway:
+    baseline-on-migrate: true
+    baseline-version: 0
