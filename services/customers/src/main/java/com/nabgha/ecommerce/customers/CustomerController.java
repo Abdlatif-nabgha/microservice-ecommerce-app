@@ -21,7 +21,8 @@ class CustomerController {
     public ResponseEntity<CustomerResponse> createCustomer(
             @RequestBody @Valid CustomerRequest request
     ) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(customerService.createCustomer(request));
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(customerService.createCustomer(request));
     }
 
     @PutMapping("/{customerId}")
@@ -29,26 +30,30 @@ class CustomerController {
             @RequestBody @Valid CustomerRequest request,
             @PathVariable String customerId
     ){
-        return ResponseEntity.ok(customerService.updateCustomer(request, customerId));
+        return ResponseEntity
+                .ok(customerService.updateCustomer(request, customerId));
     }
 
     @GetMapping
     public ResponseEntity<List<CustomerResponse>> findAllCustomers() {
-        return ResponseEntity.ok(customerService.findAllCustomers());
+        return ResponseEntity
+                .ok(customerService.findAllCustomers());
     }
 
     @GetMapping("/{customerId}")
     public ResponseEntity<CustomerResponse> findCustomerById(
             @PathVariable String customerId
     ){
-        return ResponseEntity.ok(customerService.findCustomerById(customerId));
+        return ResponseEntity
+                .ok(customerService.findCustomerById(customerId));
     }
 
     @GetMapping("/exists/{customerId}")
     public ResponseEntity<Boolean> existsById(
             @PathVariable String customerId
     ){
-        return ResponseEntity.ok(customerService.existsById(customerId));
+        return ResponseEntity
+                .ok(customerService.existsById(customerId));
     }
 
     @DeleteMapping("/{customerId}")

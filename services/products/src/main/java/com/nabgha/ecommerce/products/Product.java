@@ -1,9 +1,7 @@
 package com.nabgha.ecommerce.products;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import com.nabgha.ecommerce.category.Category;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -13,13 +11,18 @@ import java.math.BigDecimal;
 public class Product {
 
     @Id
-    @jakarta.persistence.GeneratedValue(strategy = jakarta.persistence.GenerationType.UUID)
+    @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
     private String name;
     private String description;
     private double availableQuantity;
+    @Column(precision = 12, scale = 2)
     private BigDecimal price;
-    @ManyToOne
-    @JoinColumn(name = "category_id")
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "category_id", nullable = false)
     private Category category;
+
+    @Version
+    private Long version;
 }

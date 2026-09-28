@@ -1,21 +1,18 @@
 package com.nabgha.ecommerce.products;
 
+import com.nabgha.ecommerce.category.Category;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ProductMapper {
 
-    public Product toProduct(ProductRequest request) {
+    public Product toProduct(ProductRequest request, Category category) {
         return Product.builder()
                 .name(request.name())
                 .description(request.description())
                 .availableQuantity(request.availableQuantity())
                 .price(request.price())
-                .category(
-                        Category.builder()
-                                .id(request.categoryId())
-                                .build()
-                )
+                .category(category)
                 .build();
     }
 
