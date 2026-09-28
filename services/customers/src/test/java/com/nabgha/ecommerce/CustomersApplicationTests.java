@@ -100,7 +100,7 @@ class CustomersApplicationTests {
 
     @Test
     void shouldDeleteCustomerSuccessfully() {
-        CustomerRequest request = new CustomerRequest("Dave", "Grohl", "dave@example.com", new Address("Rock St", "4", "444"));
+        CustomerRequest request = new CustomerRequest("Dave", "Growl", "dave@example.com", new Address("Rock St", "4", "444"));
         String customerId = given().contentType(ContentType.JSON).body(request).post("/api/v1/customers").then().statusCode(201).extract().path("id");
 
         given().delete("/api/v1/customers/" + customerId)

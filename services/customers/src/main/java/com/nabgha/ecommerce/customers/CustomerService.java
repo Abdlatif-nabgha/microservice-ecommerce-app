@@ -3,6 +3,8 @@ package com.nabgha.ecommerce.customers;
 
 import com.nabgha.ecommerce.exceptions.CustomerNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,11 +47,9 @@ public class CustomerService {
         return mapper.toCustomerResponse(updatedCustomer);
     }
 
-    public List<CustomerResponse> findAllCustomers() {
-        return customerRepository.findAll()
-                .stream()
-                .map(mapper::toCustomerResponse)
-                .toList();
+    public Page<CustomerResponse> findAllCustomers(Pageable pageable) {
+        return customerRepository.findAll(pageable)
+                .map(mapper::toCustomerResponse);
     }
 
     public CustomerResponse findCustomerById(String customerId) {
