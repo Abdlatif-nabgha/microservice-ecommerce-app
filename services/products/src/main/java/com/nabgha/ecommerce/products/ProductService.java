@@ -62,7 +62,7 @@ public class ProductService {
         for (Product product : savedProducts) {
             double quantity = requestedQuantities.get(product.getId());
             if (product.getAvailableQuantity() < quantity) {
-                throw new ProductPurchaseException("Insufficient stock for product: \" + product.getId()");
+                throw new ProductPurchaseException("Insufficient stock for product: " + product.getId());
             }
             product.setAvailableQuantity(product.getAvailableQuantity() - quantity);
             purchasedProducts.add(ProductPurchaseResponse.builder()

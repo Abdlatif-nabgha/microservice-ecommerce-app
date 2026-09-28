@@ -12,7 +12,7 @@ public class ProductSpecifications {
     public static Specification<Product> hasCategory(String categoryId) {
         return (root, query, criteriaBuilder) -> categoryId == null || categoryId.isBlank()
                 ? null
-                : criteriaBuilder.equal(root.get("category"), categoryId);
+                : criteriaBuilder.equal(root.get("category").get("id"), categoryId);
     }
 
     public static Specification<Product> priceAtLeast(BigDecimal min) {
