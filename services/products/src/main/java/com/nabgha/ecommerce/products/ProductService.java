@@ -86,6 +86,10 @@ public class ProductService {
                                          BigDecimal min,
                                          BigDecimal max,
                                          Pageable pageable) {
+        if (categoryId != null && !categoryId.isBlank() && !categoryRepository.existsById(categoryId)) {
+            throw new CategoryNotFoundException(categoryId);
+        }
+
         Specification<Product> spec = hasCategory(categoryId)
                 .and(priceAtLeast(min))
                 .and(priceAtMost(max));

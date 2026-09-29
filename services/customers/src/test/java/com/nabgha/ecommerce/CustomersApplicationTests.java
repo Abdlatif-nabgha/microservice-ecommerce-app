@@ -1,20 +1,30 @@
 package com.nabgha.ecommerce;
 
 import com.nabgha.ecommerce.customers.Address;
+import com.nabgha.ecommerce.customers.Customer;
 import com.nabgha.ecommerce.customers.CustomerRequest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Query;
+
+import java.util.List;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
+
 @Import(TestcontainersConfiguration.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class CustomersApplicationTests {
+
+    @Autowired
+    private MongoTemplate mongoTemplate;
 
     @LocalServerPort
     private int port;
@@ -22,10 +32,7 @@ class CustomersApplicationTests {
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
-    }
-
-    @Test
-    void contextLoads() {
+        mongoTemplate.remove(new Query(), Customer.class);
     }
 
     @Test
@@ -67,7 +74,13 @@ class CustomersApplicationTests {
     @Test
     void shouldUpdateCustomerSuccessfully() {
         CustomerRequest request = new CustomerRequest("Alice", "Smith", "alice@example.com", new Address("St", "1", "123"));
-        String customerId = given().contentType(ContentType.JSON).body(request).post("/api/v1/customers").then().statusCode(201).extract().path("id");
+        String customerId = given()
+                .contentType(ContentType.JSON)
+                .body(request).post("/api/v1/customers")
+                .then()
+                .statusCode(201)
+                .extract()
+                .path("id");
 
         CustomerRequest updateRequest = new CustomerRequest("Alice", "Jones", "alice.jones@example.com", new Address("St", "1", "123"));
         given().contentType(ContentType.JSON).body(updateRequest)
@@ -77,16 +90,32 @@ class CustomersApplicationTests {
                 .body("email", equalTo("alice.jones@example.com"));
 
         given().get("/api/v1/customers/" + customerId)
-                .then().statusCode(200).body("lastName", equalTo("Jones"));
+                .then()
+                .statusCode(200)
+                .body("lastName", equalTo("Jones"));
     }
 
     @Test
     void shouldFindAllCustomers() {
-        CustomerRequest request = new CustomerRequest("Bob", "Builder", "bob@example.com", new Address("Build St", "2", "222"));
-        given().contentType(ContentType.JSON).body(request).post("/api/v1/customers").then().statusCode(201);
+        mongoTemplate.insertAll(List.of(
+                Customer.builder()
+                        .firstName("Bob")
+                        .lastName("Builder")
+                        .email("bob@example.com")
+                        .build(),
+                Customer.builder()
+                        .firstName("Alice")
+                        .lastName("Smith")
+                        .email("alice@example.com")
+                        .build()
 
-        given().get("/api/v1/customers")
-                .then().statusCode(200).body("size()", greaterThanOrEqualTo(1));
+        ));
+
+        given()
+                .get("/api/v1/customers")
+                .then()
+                .statusCode(200)
+                .body("content.size()", equalTo(2));
     }
 
     @Test
@@ -95,7 +124,9 @@ class CustomersApplicationTests {
         String customerId = given().contentType(ContentType.JSON).body(request).post("/api/v1/customers").then().statusCode(201).extract().path("id");
 
         given().get("/api/v1/customers/exists/" + customerId)
-                .then().statusCode(200).body(equalTo("true"));
+                .then()
+                .statusCode(200)
+                .body(equalTo("true"));
     }
 
     @Test
@@ -108,5 +139,11 @@ class CustomersApplicationTests {
 
         given().get("/api/v1/customers/exists/" + customerId)
                 .then().statusCode(200).body(equalTo("false"));
+    }
+
+    @Test
+    void shouldReturn404WhenCustomerNotFound() {
+        given().get("/api/v1/customers/unknown-id")
+                .then().statusCode(404);
     }
 }
