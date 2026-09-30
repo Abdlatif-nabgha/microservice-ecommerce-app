@@ -24,6 +24,8 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.UUID)
     private  String id;
     private String reference;
+
+    @Column(precision = 12, scale = 2)
     private BigDecimal totalAmount;
 
     @Enumerated(STRING)
