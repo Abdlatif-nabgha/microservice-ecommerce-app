@@ -1,15 +1,14 @@
 package com.nabgha.ecommerce.orders;
 
 import com.nabgha.ecommerce.customer.CustomerClient;
-import com.nabgha.ecommerce.exception.BusinessException;
+import com.nabgha.ecommerce.exception.CustomerNotFoundException;
+import com.nabgha.ecommerce.exception.OrderNotFoundException;
 import com.nabgha.ecommerce.kafka.OrderConfirmation;
 import com.nabgha.ecommerce.kafka.OrderProducer;
-import com.nabgha.ecommerce.orderLines.OrderLineRequest;
-import com.nabgha.ecommerce.orderLines.OrderLineService;
+import com.nabgha.ecommerce.orderLines.OrderLine;
 import com.nabgha.ecommerce.payment.PaymentClient;
 import com.nabgha.ecommerce.payment.PaymentRequest;
 import com.nabgha.ecommerce.product.ProductClient;
-import com.nabgha.ecommerce.product.PurchaseRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,7 +22,6 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
-    private final OrderLineService orderLineService;
 
     private final CustomerClient customerClient;
     private final ProductClient productClient;
@@ -35,31 +33,29 @@ public class OrderService {
 
         // 1. check the customer    -> customer-microservice  (OpenFein)
         var customer = this.customerClient.findCustomerById(request.customerId())
-                .orElseThrow(() -> new BusinessException("Cannot create order because customer not found"));
+                .orElseThrow(() -> new CustomerNotFoundException(request.customerId()));
 
-        // 2. purchase the product  -> product-microservice (RestClient)
+        // 2. persist order and order lines before changing stock in the product service
+        var order = orderMapper.toOrder(request);
+        request.products().forEach(p ->
+                order.addOrderLine(OrderLine.builder()
+                        .productId(p.productId())
+                        .quantity(p.quantity())
+                        .build()
+                )
+        );
+        var persistedOrder = orderRepository.saveAndFlush(order);
+        var orderResponse = orderMapper.toOrderResponse(persistedOrder);
+
+        // 3. purchase the product -> product-microservice (RestClient)
         var purchaseProducts = this.productClient.purchaseProducts(request.products());
 
-        // 3. persist order && order lines
-        var order = orderRepository.save(orderMapper.toOrder(request));
-
-        var orderResponse = orderMapper.toOrderResponse(order);
-
-        for (PurchaseRequest purchaseRequest : request.products()) {
-            orderLineService.saveOrderline(
-                    new OrderLineRequest(
-                            order.getId(),
-                            purchaseRequest.productId(),
-                            purchaseRequest.quantity()
-                    )
-            );
-        }
         // 4. start payment process (payment microservice)
         var paymentRequest = new PaymentRequest(
                 request.amount(),
                 request.paymentMethod(),
-                order.getId(),
-                order.getReference(),
+                persistedOrder.getId(),
+                persistedOrder.getReference(),
                 customer
         );
         paymentClient.requestOrderPayment(paymentRequest);
@@ -86,7 +82,7 @@ public class OrderService {
 
     public OrderResponse findById(String id) {
         var order = orderRepository.findById(id)
-                .orElseThrow(() -> new BusinessException("Cannot find order"));
+                .orElseThrow(() -> new OrderNotFoundException(id));
         return orderMapper.toOrderResponse(order);
     }
 }

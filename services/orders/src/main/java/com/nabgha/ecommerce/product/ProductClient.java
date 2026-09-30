@@ -1,11 +1,14 @@
 package com.nabgha.ecommerce.product;
 
 import com.nabgha.ecommerce.exception.BusinessException;
+import com.nabgha.ecommerce.exception.ProductServiceUnavailableException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClient;
 
 import java.util.List;
@@ -26,16 +29,26 @@ public class ProductClient {
         ParameterizedTypeReference<List<PurchaseResponse>> responseType =
                 new ParameterizedTypeReference<>() {};
 
-        ResponseEntity<List<PurchaseResponse>> responseEntity = restClient.post()
-                .uri(productUrl + "/purchase")
-                .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-                .body(requests)
-                .retrieve()
-                .toEntity(responseType);
-
-        if (responseEntity.getStatusCode().isError()) {
-            throw new BusinessException("Product or quantity doesn't exist" + responseEntity.getStatusCode());
+        List<PurchaseResponse> purchasedProducts;
+        try {
+            purchasedProducts = restClient.post()
+                    .uri(productUrl + "/purchase")
+                    .header(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                    .body(requests)
+                    .retrieve()
+                    .body(responseType);
+        } catch (HttpClientErrorException e) {
+            throw new BusinessException("Product purchase rejected: " + e.getStatusText(), e);
+        } catch (HttpServerErrorException | ResourceAccessException e) {
+            throw new ProductServiceUnavailableException(
+                    "Product service is currently unavailable",
+                    e
+            );
         }
-        return responseEntity.getBody();
+
+        if (purchasedProducts == null) {
+            throw new IllegalStateException("Product service returned an empty purchase response");
+        }
+        return purchasedProducts;
     }
 }

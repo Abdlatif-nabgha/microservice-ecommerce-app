@@ -1,6 +1,9 @@
 package com.nabgha.ecommerce.handler;
 
 import com.nabgha.ecommerce.exception.BusinessException;
+import com.nabgha.ecommerce.exception.CustomerNotFoundException;
+import com.nabgha.ecommerce.exception.OrderNotFoundException;
+import com.nabgha.ecommerce.exception.ProductServiceUnavailableException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +19,15 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(BusinessException.class)
-    public ResponseEntity<ErrorResponse> handleProductNotFoundException(BusinessException e) {
+    public ResponseEntity<ErrorResponse> handleBusinessException(BusinessException e) {
+        return new ResponseEntity<>(
+                new ErrorResponse(Map.of("error", e.getMessage())),
+                HttpStatus.BAD_REQUEST
+        );
+    }
+
+    @ExceptionHandler({CustomerNotFoundException.class, OrderNotFoundException.class})
+    public ResponseEntity<ErrorResponse> handleNotFoundException(RuntimeException e) {
         return new ResponseEntity<>(
                 new ErrorResponse(Map.of("error", e.getMessage())),
                 HttpStatus.NOT_FOUND
@@ -24,10 +35,18 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleProductPurchaseException(EntityNotFoundException e) {
+    public ResponseEntity<ErrorResponse> handleEntityNotFoundException(EntityNotFoundException e) {
         return new ResponseEntity<>(
                 new ErrorResponse(Map.of("error", e.getMessage())),
                 HttpStatus.BAD_REQUEST
+        );
+    }
+
+    @ExceptionHandler(ProductServiceUnavailableException.class)
+    public ResponseEntity<ErrorResponse> handleServiceUnavailable(ProductServiceUnavailableException e) {
+        return new ResponseEntity<>(
+                new ErrorResponse(Map.of("error", e.getMessage())),
+                HttpStatus.SERVICE_UNAVAILABLE
         );
     }
 
